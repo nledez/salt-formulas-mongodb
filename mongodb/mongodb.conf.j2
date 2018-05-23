@@ -1,8 +1,23 @@
 # mongodb.conf
+{%- set bind_ip = salt['grains.get']('ip4_interfaces:ens192', '127.0.0.1')[0] %}
+{%- set auth = salt['pillar.get']('mongodb:auth', False) %}
+{%- set repl_set = salt['pillar.get']('mongodb:repl_set', False) %}
+{%- set storage_engine = salt['pillar.get']('mongodb:storage_engine', False) %}
+{%- set key_file = salt['pillar.get']('mongodb:key_file', False) %}
 dbpath=/var/lib/mongodb
 logpath=/var/log/mongodb/mongodb.log
 logappend=true
-bind_ip = 127.0.0.1
+bind_ip = {{ bind_ip }}
 journal=true
+{%- if auth %}
 auth = true
-storageEngine=wiredTiger
+{%- endif %}
+{%- if storage_engine %}
+storageEngine={{ storage_engine }}
+{%- endif %}
+{%- if repl_set %}
+replSet={{ repl_set }}
+{%- endif %}
+{%- if key_file %}
+keyFile=/etc/ssl/mongodb-keyfile
+{%- endif %}
